@@ -24,7 +24,13 @@ namespace SeminarHub
                 options.Password.RequireUppercase = false;
             })
                 .AddEntityFrameworkStores<SeminarHubDbContext>();
+<<<<<<< HEAD
             
+=======
+
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<SeminarHubDbContext>();
+>>>>>>> c3147e76ecd2d58dcd5b3d43976c37a3f34ee104
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
