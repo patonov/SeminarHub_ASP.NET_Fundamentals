@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SeminarHub.Data.Models;
 
@@ -33,7 +34,7 @@ namespace SeminarHub.Data
                 .HasForeignKey(sp => sp.ParticipantId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-
+           
             builder
                .Entity<Category>()
                .HasData(new Category()
