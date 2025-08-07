@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SeminarHub.Data;
+using SeminarHub.Services;
+using SeminarHub.Services.Contracts;
 
 namespace SeminarHub
 {
@@ -25,8 +27,8 @@ namespace SeminarHub
             })
                 .AddEntityFrameworkStores<SeminarHubDbContext>();
 
-
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<ISeminarService, SeminarServices>();
 
             var app = builder.Build();
 

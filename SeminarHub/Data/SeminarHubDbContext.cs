@@ -34,6 +34,9 @@ namespace SeminarHub.Data
                 .HasForeignKey(sp => sp.ParticipantId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            builder.Entity<IdentityUserLogin<string>>().HasKey(x => new { x.LoginProvider, x.ProviderKey });
+            builder.Entity<IdentityUserRole<string>>().HasKey(x => new { x.UserId, x.RoleId });
+            builder.Entity<IdentityUserToken<string>>().HasKey(x => new { x.UserId, x.LoginProvider, x.Name });
            
             builder
                .Entity<Category>()
