@@ -25,6 +25,8 @@ namespace SeminarHub
             })
                 .AddEntityFrameworkStores<SeminarHubDbContext>();
 
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<SeminarHubDbContext>();
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();

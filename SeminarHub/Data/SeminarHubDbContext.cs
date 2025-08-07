@@ -56,8 +56,6 @@ namespace SeminarHub.Data
                    Id = 4,
                    Name = "Arts & Culture"
                });
-
-            base.OnModelCreating(builder);
         }
     }
 }
