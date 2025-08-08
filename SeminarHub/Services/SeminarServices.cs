@@ -73,5 +73,77 @@ namespace SeminarHub.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<SeminarAddViewModel> GetSeminarViewModelToEditAsync(int id)
+        {
+            var categories = await _context.Categories
+                .Select(c => new CategoryViewModel
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                })
+                .ToListAsync();
+
+            var model = await _context.Seminars.Where(s => s.Id == id)
+                .Select(s => new SeminarAddViewModel
+                {
+                    Topic = s.Title,
+                    Lecturer = s.Lecturer,
+                    Details = s.Details,
+                    DateAndTime = s.DateAndTime.ToString("dd/MM/yyyy HH:mm"),
+                    Duration = s.Duration,
+                    CategoryId = s.CategoryId,
+                    OrganizerId = s.OrganizerId,
+                    Categories = categories,
+                })
+                .FirstOrDefaultAsync();
+
+            return model;
+        }
+
+        public async Task<Seminar> GetSeminarAsync(int id)
+        { 
+            Seminar? seminar = await _context.Seminars.FirstOrDefaultAsync(s => s.Id == id);
+            
+            return seminar;
+        }
+
+        public async Task EditSeminarAsync(SeminarAddViewModel model, Seminar target)
+        {
+            if (!DateTime.TryParseExact(model.DateAndTime, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None,
+               out var timeOfSeminar))
+            {
+                throw new InvalidOperationException("Invalid date format");
+            }
+
+            target.Title = model.Topic;
+            target.Lecturer = model.Lecturer;
+            target.Details = model.Details;
+            target.DateAndTime = timeOfSeminar;
+            target.Duration = model.Duration;
+            target.CategoryId = model.CategoryId;
+            
+            await _context.Seminars.AddAsync(target);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<SeminarDetailsViewModel> GetSeminarDetailsAsync(int id)
+        {
+            var model = await _context.Seminars.Where(s => s.Id == id)
+                .Select(s => new SeminarDetailsViewModel
+                {
+                Id = s.Id,
+                Topic = s.Title,
+                DateAndTime = s.DateAndTime.ToString("dd/MM/yyyy HH:mm"),
+                Duration = s.Duration,
+                Lecturer = s.Lecturer,
+                Details = s.Details,
+                Category = s.Category.Name,
+                Organizer = s.Organizer.UserName,
+                })
+                .FirstOrDefaultAsync();
+            
+            return model;
+        }
+
     }
 }

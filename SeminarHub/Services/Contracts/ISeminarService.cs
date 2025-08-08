@@ -1,4 +1,5 @@
-﻿using SeminarHub.Models;
+﻿using SeminarHub.Data.Models;
+using SeminarHub.Models;
 
 namespace SeminarHub.Services.Contracts
 {
@@ -8,5 +9,11 @@ namespace SeminarHub.Services.Contracts
 
         Task<SeminarAddViewModel> GetSeminarAddViewModelAsync();
         Task AddSeminarAsync(SeminarAddViewModel model, string userId);
+
+        Task<SeminarAddViewModel> GetSeminarViewModelToEditAsync(int id);
+        Task EditSeminarAsync(SeminarAddViewModel model, Seminar target);
+        Task<Seminar> GetSeminarAsync(int id);
+
+        Task<SeminarDetailsViewModel> GetSeminarDetailsAsync(int id); 
     }
 }
