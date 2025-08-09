@@ -102,5 +102,85 @@ namespace SeminarHub.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> Joined()
+        {
+            string userId = GetUserId();
+
+            var model = await _seminarServices.GetAllSeminarsJoinedOfUserAsync(userId);
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> Join(int id)
+        {
+            string userId = GetUserId();
+
+            SeminarJoinedViewModel? seminar = await _seminarServices.GetForJoiningSeminarByIdAsync(id);
+
+            if (seminar == null)
+            {
+                return RedirectToAction("All", "Seminar");
+            }
+
+            await _seminarServices.AddSeminarToJoinedAsync(userId, seminar);
+            return RedirectToAction("Joined", "Seminar");
+        }
+
+        public async Task<IActionResult> Leave(int id)
+        { 
+            string userId = GetUserId();
+
+            SeminarJoinedViewModel? seminar = await _seminarServices.GetForJoiningSeminarByIdAsync(id);
+
+            if (seminar == null)
+            {
+                return RedirectToAction("All", "Seminar");
+            }
+
+            await _seminarServices.LeaveSeminar(userId, seminar);
+            return RedirectToAction("Joined", "Seminar");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            string userId = GetUserId();
+
+            Seminar seminar = await _seminarServices.FindSeminarToDeleteById(id);
+
+            if (seminar == null || seminar.OrganizerId != userId)
+            {
+                return RedirectToAction("All", "Seminar");
+            }
+
+            SeminarDeleteViewModel seminarViewModel = new SeminarDeleteViewModel()
+            {
+                Id = seminar.Id,
+                Topic = seminar.Title,
+                DateAndTime = seminar.DateAndTime,
+            };
+
+            return View(seminarViewModel);
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            string userId = GetUserId();
+
+            Seminar seminar = await _seminarServices.FindSeminarToDeleteById(id);
+
+            if (seminar == null || seminar.OrganizerId != userId)
+            {
+                return RedirectToAction("All", "Seminar");
+            }
+
+            await _seminarServices.DeleteSeminarAsync(seminar);
+            return RedirectToAction("All", "Seminar");
+        }
+
     }
 }

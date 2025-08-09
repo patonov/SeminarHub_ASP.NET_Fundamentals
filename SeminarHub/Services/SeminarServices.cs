@@ -145,5 +145,80 @@ namespace SeminarHub.Services
             return model;
         }
 
+        public async Task<IEnumerable<SeminarJoinedViewModel>> GetAllSeminarsJoinedOfUserAsync(string userId)
+        {
+            IEnumerable<SeminarJoinedViewModel> model = await _context
+                .SeminarsParticipants
+                .Where(sp => sp.ParticipantId == userId)
+                .Include(sp => sp.Seminar)
+                .Select(sp => new SeminarJoinedViewModel
+                {
+                    Id = sp.SeminarId,
+                    Topic = sp.Seminar.Title,
+                    Organizer = sp.Seminar.Organizer.UserName,
+                    Lecturer = sp.Seminar.Lecturer,
+                    DateAndTime = sp.Seminar.DateAndTime.ToString("dd/MM/yyyy HH:mm"),
+                })
+                .ToListAsync();
+            
+            return model;
+        }
+        
+        public async Task<SeminarJoinedViewModel?> GetForJoiningSeminarByIdAsync(int id)
+        {
+            SeminarJoinedViewModel? seminar = await _context.Seminars.Where(s => s.Id == id)
+                .Select(s => new SeminarJoinedViewModel
+                {
+                    Id = s.Id,
+                    Topic = s.Title,
+                    Organizer = s.Organizer.UserName,
+                    Lecturer = s.Lecturer,
+                    DateAndTime = s.DateAndTime.ToString("dd/MM/yyyy HH:mm")
+                }).FirstOrDefaultAsync();
+
+            return seminar;
+        }
+
+        public async Task AddSeminarToJoinedAsync(string userId, SeminarJoinedViewModel seminar)
+        {
+            bool isExisted = await _context.SeminarsParticipants
+                .AnyAsync(sp => sp.ParticipantId == userId && sp.SeminarId == seminar.Id);
+
+            if (!isExisted)
+            {
+                SeminarParticipant seminarParticipant = new SeminarParticipant()
+                {
+                    SeminarId = seminar.Id,
+                    ParticipantId = userId,
+                };
+
+                await _context.SeminarsParticipants.AddAsync(seminarParticipant);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task LeaveSeminar(string userId, SeminarJoinedViewModel seminar)
+        {
+            var seminarParticipant = await _context.SeminarsParticipants
+                .FirstOrDefaultAsync(sp => sp.ParticipantId == userId && sp.SeminarId == seminar.Id);
+
+            if (seminar != null)
+            {               
+                _context.SeminarsParticipants.Remove(seminarParticipant!);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<Seminar> FindSeminarToDeleteById(int id)
+        { 
+            Seminar? seminar = await _context.Seminars.FindAsync(id);
+            return seminar;
+        }
+
+        public async Task DeleteSeminarAsync(Seminar seminar)
+        { 
+            _context.Seminars.Remove(seminar);
+            await _context.SaveChangesAsync();
+        }
     }
 }

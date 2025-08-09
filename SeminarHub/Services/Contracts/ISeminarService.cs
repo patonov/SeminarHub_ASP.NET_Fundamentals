@@ -15,5 +15,15 @@ namespace SeminarHub.Services.Contracts
         Task<Seminar> GetSeminarAsync(int id);
 
         Task<SeminarDetailsViewModel> GetSeminarDetailsAsync(int id); 
+
+        Task<IEnumerable<SeminarJoinedViewModel>> GetAllSeminarsJoinedOfUserAsync(string userId);
+
+        Task AddSeminarToJoinedAsync(string userId, SeminarJoinedViewModel seminar);
+        Task<SeminarJoinedViewModel?> GetForJoiningSeminarByIdAsync(int id);
+
+        Task LeaveSeminar(string userId, SeminarJoinedViewModel seminar);
+
+        Task DeleteSeminarAsync(Seminar seminar);
+        Task<Seminar> FindSeminarToDeleteById(int id);
     }
 }
